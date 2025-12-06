@@ -31,4 +31,18 @@ void from_json(const json& j, MessageData& m)
     m.time = j.at("time").get<string>();
 }
 
+tuple<int, string> HandleResponse(const string& input) 
+{
+    size_t spacePos = input.find(' ');
+
+    if (spacePos == string::npos) 
+    {
+        throw invalid_argument("Input must contain a space separating number and text.");
+    }
+
+    int number = stoi(input.substr(0, spacePos));
+    string text = input.substr(spacePos + 1);
+    return {number, text};
+}
+
 #endif

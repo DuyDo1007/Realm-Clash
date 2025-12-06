@@ -13,7 +13,7 @@ void HandleClient(int clientFD)
         Clients.push_back(clientFD);
     }
 
-    SendMessage(clientFD, to_string(NETWORK_CONNECTED));
+    SendMessage(clientFD, to_string(NETWORK_CONNECTED) + " " + to_string(clientFD)); 
 
     while (true)
     {
@@ -21,6 +21,8 @@ void HandleClient(int clientFD)
         if (msg.empty()) break;
 
         cout << "\033[33m■\033[0m [Client " << clientFD << "]: " << msg << endl;
+
+        msg = "1 [Client " + to_string(clientFD) + "]: " + msg;
 
         BroadcastMessage(msg, clientFD);
     }
@@ -36,6 +38,8 @@ void HandleClient(int clientFD)
 
 int main()
 {
+    ClearScreen();
+
     int ServerFD = CreateSocket();
 
     while (true)

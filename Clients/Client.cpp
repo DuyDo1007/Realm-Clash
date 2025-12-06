@@ -39,35 +39,51 @@ void ReceiveThread(int clientFD)
         string msg = ReceiveMessage(clientFD);
         if (msg.empty()) break;
 
-        if (atoi(msg.c_str()) == NETWORK_CONNECTED)
+        auto [code, data] = HandleResponse(msg);
+
+        if (code == NETWORK_CONNECTED)
         {
-            Lobby lobby;
-            string playerName = to_string(clientFD);
-
-            int myFD = 999;
-            // Add some sample rooms
-            CreateRoom(lobby, myFD, "RoomA");
-            CreateRoom(lobby, myFD, "RoomB");
-            CreateRoom(lobby, myFD, "RoomC");
-            CreateRoom(lobby, myFD, "RoomD");
-            CreateRoom(lobby, myFD, "RoomE");
-            CreateRoom(lobby, myFD, "RoomF");
-            CreateRoom(lobby, myFD, "RoomG");
-
-            int page = 0;
-
-            vector<UIRoom> rooms = ConvertLobbyRooms(lobby);
-            int totalPages = ((int)rooms.size() + 14)/15;
-
-            DrawUI(rooms, playerName, page, totalPages);
+            ClientFD = atoi(data.c_str());
+            cout << data << endl;
         }
+        else if (code == 1)
+        {
+            cout << data << endl;
+        }
+
+        // if (atoi(msg.c_str()) == NETWORK_CONNECTED)
+        // {
+        //     Lobby lobby;
+        //     string playerName = to_string(clientFD);
+
+        //     int myFD = clientFD;
+        //     // Add some sample rooms
+        //     CreateRoom(lobby, myFD, "RoomA");
+        //     CreateRoom(lobby, myFD, "RoomB");
+        //     CreateRoom(lobby, myFD, "RoomC");
+        //     CreateRoom(lobby, myFD, "RoomD");
+        //     CreateRoom(lobby, myFD, "RoomE");
+        //     CreateRoom(lobby, myFD, "RoomF");
+        //     CreateRoom(lobby, myFD, "RoomG");
+
+        //     int page = 0;
+
+        //     vector<UIRoom> rooms = ConvertLobbyRooms(lobby);
+        //     int totalPages = ((int)rooms.size() + 14)/15;
+
+        //     DrawUI(rooms, playerName, page, totalPages);
+        // }
+
+        //cout << ClientFD << " - " << msg << endl;
     }
 }
 
 int main()
 {
-    int ClientFD = socket(AF_INET, SOCK_STREAM, 0);
-    if (ClientFD < 0) 
+    ClearScreen();
+
+    int clientFD = socket(AF_INET, SOCK_STREAM, 0);
+    if (clientFD < 0) 
     { 
         perror("socket"); 
         return 0; 
@@ -78,13 +94,13 @@ int main()
     serv.sin_port = htons(SERVER_PORT);
     inet_pton(AF_INET, CLIENT_IP, &serv.sin_addr);
 
-    if (connect(ClientFD, (sockaddr*)&serv, sizeof(serv)) < 0)
+    if (connect(clientFD, (sockaddr*)&serv, sizeof(serv)) < 0)
     {
         perror("connect");
         return 1;
     }
 
-    thread(ReceiveThread, ClientFD).detach();
+    thread(ReceiveThread, clientFD).detach();
 
     while (true)
     {
@@ -108,14 +124,14 @@ int main()
 
             json j = data;
 
-            SendMessage(ClientFD, "MESSAGE " + j.dump());
+            SendMessage(clientFD, "MESSAGE " + j.dump());
         }
         else
         {
-            SendMessage(ClientFD, msg);
+            SendMessage(clientFD, msg);
         }
     }
 
-    close(ClientFD);
+    close(clientFD);
     return 1;
 }
