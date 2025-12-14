@@ -10,10 +10,10 @@ Servers/Server.o: Servers/Server.cpp \
  Servers/../Commons/Models/Lobby2.hpp \
  Servers/../Commons/Models/../CommonIncluding.hpp \
  Servers/ServerIncluding.hpp Servers/ServerDefinition.hpp \
- Servers/ServerNetwork.hpp Servers/Utilities/ServerLogger.hpp \
- Servers/Models/Entities/AccountEntity.hpp \
+ Servers/ServerNetwork.hpp Servers/Models/Entities/AccountEntity.hpp \
  Servers/Models/Records/AccountRecord.hpp \
  Servers/Models/Entities/LobbyEntity.hpp \
+ Servers/Utilities/ServerLogger.hpp Servers/Utilities/ServerTimer.hpp \
  Servers/Handlers/Handlers/AccountHandler.hpp \
  Servers/Handlers/Handlers/LobbyHandler.hpp \
  Servers/Handlers/Phases/ExitPhase.hpp \
@@ -32,10 +32,11 @@ Servers/../Commons/Models/../CommonIncluding.hpp:
 Servers/ServerIncluding.hpp:
 Servers/ServerDefinition.hpp:
 Servers/ServerNetwork.hpp:
-Servers/Utilities/ServerLogger.hpp:
 Servers/Models/Entities/AccountEntity.hpp:
 Servers/Models/Records/AccountRecord.hpp:
 Servers/Models/Entities/LobbyEntity.hpp:
+Servers/Utilities/ServerLogger.hpp:
+Servers/Utilities/ServerTimer.hpp:
 Servers/Handlers/Handlers/AccountHandler.hpp:
 Servers/Handlers/Handlers/LobbyHandler.hpp:
 Servers/Handlers/Phases/ExitPhase.hpp:

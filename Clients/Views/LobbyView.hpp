@@ -93,6 +93,14 @@ string GetLog(string code)
     {
         return LOG_NONE;
     }
+    else if (code == RS_UPDATE_PENDING_JOIN)
+    {
+		return FG_YELLOW "Joining request sent. Expired in " + to_string(PendingJoinTick) + ".";
+    }
+    else if (code == RS_JOIN_TEAM_F_REQUEST_REJECTED)
+    {
+		return FG_RED "Joining request rejected!";
+    }
 
     return Log;
 }
@@ -151,11 +159,9 @@ string GetSubLog()
     }
 }
 
-void ShowLobbyView(string code)
+void ShowLobbyView()
 {
     ClearScreen();
-
-    Log = GetLog(code);
 
     cout << MakeTitle(Account.Name) << "\n";
     cout <<
@@ -173,5 +179,18 @@ void ShowLobbyView(string code)
     "┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛\n";
 }
 
-//⭐
+void ShowLobbyLog(string log)
+{
+    Log = log;
+
+    ShowLobbyView();
+}
+
+void ShowLobbyCode(string code)
+{
+    Log = GetLog(code);
+
+    ShowLobbyView();
+}
+
 #endif

@@ -8,25 +8,13 @@ struct TeamEntity
     array<int, 3> Members;
     vector<int> JoinRequests;
 
-    int CountFreeSlot()
+    int CountFreeSlot() const
     {
-        int counter = 3;
-        for (int i = 0; i < 3; i++)
-        {
-            if (Members[i] != 0) counter--;
-        }
-
-        return counter;
+        return count(Members.begin(), Members.end(), 0);
     }
     int CountMember() const
     {
-        int counter = 0;
-        for (int i = 0; i < 3; i++)
-        {
-            if (Members[i] != 0) counter++;
-        }
-
-        return counter;
+        return 3 - CountFreeSlot();
     }
     int AssignFreeSlot(int account)
     {

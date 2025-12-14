@@ -34,7 +34,7 @@ void HandleWelcomeResponse(int clientFD, const string& code, vector<string> spli
         Account = AccountRecord::Deserialize(split[1]);
         CurrentPhase = PHASE_LOBBY_JOINING_READY;
 
-        ShowLobbyView(code);
+        ShowLobbyCode(code);
         SendMessage(clientFD, string(RQ_UPDATE_LOBBY));
     }
 }

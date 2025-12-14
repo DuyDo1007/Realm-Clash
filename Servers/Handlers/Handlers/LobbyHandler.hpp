@@ -1,40 +1,6 @@
 #ifndef SERVER_HANDLER_LOBBY
 #define SERVER_HANDLER_LOBBY
 
-void StartTick(int clientFD, int duration, const function<void(int, int)>& onTick)
-{
-    {
-        lock_guard<mutex> lock(SessionsMutex);
-        Sessions[clientFD].Initialize();
-        Sessions[clientFD].Counting.store(true);
-    }
-
-    thread([clientFD, duration, onTick]()
-    {
-        for (int i = 0; i < duration; i++)
-        {
-            bool counting = false;
-            {
-                lock_guard<mutex> lock(SessionsMutex);
-                counting = Sessions[clientFD].Counting.load();
-            }
-
-            if (!counting) break;
-
-            if (onTick) onTick(clientFD, i);
-
-            this_thread::sleep_for(chrono::seconds(1));
-        }
-
-        {
-            lock_guard<mutex> lock(SessionsMutex);
-            Sessions[clientFD].Counting.store(false);
-        }
-
-    }).detach();
-}
-
-
 void HandleUpdateLobby(int clientFD)
 {
     SendMessage(clientFD, string(RS_UPDATE_ROOM_LIST) + " " + Lobby.Serialize());
@@ -87,18 +53,44 @@ void HandleJoinTeam(int clientFD, string data)
         }
         else
         {
-			auto teamLeaderID = team.Members[0];
-			auto teamLeaderFD = GetValueByKey(Clients, teamLeaderID);
-
-			team.JoinRequests.push_back(account.ID);
-			
-            SendMessage(teamLeaderFD, string(RS_UPDATE_JOIN_REQUEST) + " " + to_string(team.JoinRequests.size()));
-            WriteLog(LogType::Success, teamLeaderFD, "UPDATE_JOIN_REQUEST " + to_string(team.JoinRequests.size()));
-        
-            StartTick(clientFD, 10, [](int clientFD, int tick)
+            if (team.CountFreeSlot() == (int)team.JoinRequests.size())
             {
-			    SendMessage(clientFD, string(RS_UPDATE_PENDING_JOIN) + " " + to_string(tick));
-            });
+				SendMessage(clientFD, string(RS_JOIN_TEAM_F_REQUEST_FULL));
+            }
+            else
+            {
+                auto teamLeaderID = team.Members[0];
+                auto teamLeaderFD = GetValueByKey(Clients, teamLeaderID);
+
+                team.JoinRequests.push_back(account.ID);
+
+                SendMessage(teamLeaderFD, string(RS_UPDATE_JOIN_REQUEST) + " " + to_string(team.JoinRequests.size()));
+                WriteLog(LogType::Success, teamLeaderFD, "UPDATE_JOIN_REQUEST " + to_string(team.JoinRequests.size()));
+
+                auto accountID = account.ID;
+                auto localTeamID = teamID;
+
+                StartTick(clientFD, TICK_JOIN_REQUEST,
+                    [accountID](int clientFD, int tick)
+                    {
+                        SendMessage(clientFD, string(RS_UPDATE_PENDING_JOIN) + " " + to_string(tick));
+                    },
+                    [accountID, localTeamID, teamLeaderFD](int clientFD)
+                    {
+                        lock_guard<mutex> lock(SessionsMutex);
+                        auto& team = Lobby.Teams[localTeamID];
+                        team.JoinRequests.erase(
+                            remove(team.JoinRequests.begin(), team.JoinRequests.end(), accountID),
+                            team.JoinRequests.end()
+                        );
+
+                        SendMessage(clientFD, string(RS_JOIN_TEAM_F_REQUEST_REJECTED));
+                        WriteLog(LogType::Failure, clientFD, "JOIN_TEAM_F_REQUEST_REJECTED");
+
+                        SendMessage(teamLeaderFD, string(RS_UPDATE_JOIN_REQUEST) + " " + to_string(team.JoinRequests.size()));
+                        WriteLog(LogType::Success, teamLeaderFD, "UPDATE_JOIN_REQUEST " + to_string(team.JoinRequests.size()));
+                    });
+            }
         }
     }
 }

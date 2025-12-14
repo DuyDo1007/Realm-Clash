@@ -1,8 +1,12 @@
 #ifndef CORE_DEFINITION
 #define CORE_DEFINITION
 
+// Network definitions
 #define SERVER_PORT                             5874
 #define CLIENT_IP                               "192.168.10.1" //"127.0.0.1"
+
+// Ticking times
+#define TICK_JOIN_REQUEST						30
 
 // Client request protocols
 #define RQ_SIGN_UP                              "SIGN_UP"
@@ -37,7 +41,8 @@
 
 #define RS_JOIN_TEAM_S                          "210"
 #define RS_JOIN_TEAM_F_TEAM_FULL                "201"
-#define RS_JOIN_TEAM_F_SAME_NAME                "202"
+#define RS_JOIN_TEAM_F_REQUEST_REJECTED         "202"
+#define RS_JOIN_TEAM_F_REQUEST_FULL				"206"
 #define RS_EXIT_TEAM_S                          "212"
 #define RS_EXIT_TEAN_F_MATCH_STARTED            "203"
 #define RS_ADD_MEMBER_S                         "213"

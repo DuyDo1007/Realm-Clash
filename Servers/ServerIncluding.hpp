@@ -21,8 +21,6 @@ int GetValueByKey(unordered_map<int,int>& m, int v)
 #include "ServerDefinition.hpp"
 #include "ServerNetwork.hpp"
 
-#include "Utilities/ServerLogger.hpp"
-
 #include "Models/Entities/AccountEntity.hpp"
 #include "Models/Records/AccountRecord.hpp"
 
@@ -32,6 +30,9 @@ unordered_map<int, SessionEntity> Sessions; // Map accountID to SessionEntity
 #include "Models/Entities/LobbyEntity.hpp"
 
 LobbyEntity Lobby;
+
+#include "Utilities/ServerLogger.hpp"
+#include "Utilities/ServerTimer.hpp"
 
 #include "Handlers/Handlers/AccountHandler.hpp"
 #include "Handlers/Handlers/LobbyHandler.hpp"
