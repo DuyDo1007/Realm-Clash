@@ -1,16 +1,27 @@
 #ifndef CORE_DEFINITION
 #define CORE_DEFINITION
 
+// Network definitions
 #define SERVER_PORT                             5874
-#define CLIENT_IP                               "127.0.0.1"
+#define CLIENT_IP                               "192.168.10.1" //"127.0.0.1"
+
+// Ticking times
+#define TICK_JOIN_REQUEST						30
 
 // Client request protocols
 #define RQ_SIGN_UP                              "SIGN_UP"
 #define RQ_LOG_IN                               "LOG_IN"
+
 #define RQ_UPDATE_LOBBY                         "UPDATE_LOBBY"
-#define RQ_CREATE_ROOM                          "CREATE_ROOM"
-#define RQ_JOIN_ROOM                            "JOIN_ROOM"
-#define RQ_EXIT_ROOM                            "EXIT_ROOM"
+#define RQ_JOIN_TEAM                            "JOIN_TEAM"
+#define RQ_CANCEL_JOINING                       "CANCEL_JOINING"
+#define RQ_ACCEPT_PARTICIPATION                 "ACCEPT_PARTICIPATION"
+#define RQ_ADD_MEMBER                           "ADD_MEMBER"
+#define RQ_INVITE_MEMBER                        "INVITE_MEMBER"
+#define RQ_EXIT_TEAM                            "EXIT_TEAM"
+#define RQ_KICK_MEMBER                          "KICK_MEMBER"
+
+#define RQ_START_GAME                           "START_GAME"
 #define RQ_REQUEST_SPOT                         "REQUEST_SPOT"
 #define RQ_ANSWER_SPOT                          "ANSWER_SPOT"
 #define RQ_REQUEST_CASTLE                       "REQUEST_CASTLE"
@@ -28,12 +39,15 @@
 #define RS_LOG_IN_F_WRONG_PASSWORD              "103"
 #define RS_LOG_IN_F_ACCOUNT_HAS_BEEN_USED       "104"
 
-#define RS_CREATE_ROOM_S                        "210"
-#define RS_JOIN_ROOM_S                          "211"
-#define RS_JOIN_ROOM_F_ROOM_FULL                "201"
-#define RS_JOIN_ROOM_F_SAME_NAME                "202"
-#define RS_EXIT_ROOM_S                          "212"
-#define RS_EXIT_ROOM_F_MATCH_STARTED            "203"
+#define RS_JOIN_TEAM_S                          "210"
+#define RS_JOIN_TEAM_F_TEAM_FULL                "201"
+#define RS_JOIN_TEAM_F_REQUEST_REJECTED         "202"
+#define RS_JOIN_TEAM_F_REQUEST_FULL				"206"
+#define RS_EXIT_TEAM_S                          "212"
+#define RS_EXIT_TEAN_F_MATCH_STARTED            "203"
+#define RS_ADD_MEMBER_S                         "213"
+#define RS_ADD_MEMBER_F_NOT_FOUND               "204"
+#define RS_ADD_MEMBER_F_TEAM_FULL               "205"
 
 #define RS_REQUEST_QUESTION_S                   "310"
 #define RS_REQUEST_QUESTION_F_SLOT_OCCUPIED     "301"
@@ -53,8 +67,9 @@
 #define RS_ATTACK_CASTLE_F_INSUFFICIENT_POWER   "701"
 
 #define RS_UPDATE_ROOM_LIST                     "810"
-#define RS_UPDATE_STATS_RESOURCE                "820"
-#define RS_UPDATE_STATS_TEAM                    "821"
+#define RS_UPDATE_TEAM_ROLE                     "811"
+#define RS_UPDATE_JOIN_REQUEST					"812"
+#define RS_UPDATE_PENDING_JOIN					"813"
 
 #define RS_NETWORK_CONNECTED                    "910"
 
@@ -63,6 +78,5 @@
 #define CS_LOG_IN_F_ACCOUNT_NOT_EXISTED         "Log in failed: Account not existed"
 #define CS_LOG_IN_F_WRONG_PASSWORD              "Log in failed: Wrong password"
 #define CS_LOG_IN_F_ACCOUNT_HAS_BEEN_USED       "Log in failed: Account has been used"
-
 
 #endif

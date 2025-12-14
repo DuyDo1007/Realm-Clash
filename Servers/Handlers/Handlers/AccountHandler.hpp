@@ -4,8 +4,13 @@
 string ToUID(int num)
 {
     ostringstream ss;
-    ss << "U" << setw(9) << setfill('0') << num;
+    ss << "U" << setw(7) << setfill('0') << num;
     return ss.str();
+}
+
+int ToID(const string& s)
+{
+    return stoi(s.substr(1));
 }
 
 void HandleSignUp(int clientFD, string data)
@@ -19,6 +24,7 @@ void HandleSignUp(int clientFD, string data)
         if (IsExistedAccount(ACCOUNT_PATH, account.Email, password, id, name))
         {
             SendMessage(clientFD, RS_SIGN_UP_F_ACCOUNT_EXISTED);
+            WriteLog(LogType::Failure, clientFD, "SIGN UP : Account existed");
         }
         else
         {
@@ -26,14 +32,19 @@ void HandleSignUp(int clientFD, string data)
 
             string accountName = ToUID(accountID);
 
-            AccountEntity acc 
+            lock_guard<mutex> lock(SessionsMutex);
+            Sessions[accountID].Initialize();
+
+            AccountEntity acc
             {
                 .ID = accountID,
                 .Name = accountName,
-                .FD = clientFD
             };
-            Accounts[acc.ID] = acc;
+            Accounts[accountID] = acc;
+            Clients[clientFD] = accountID;
+
             SendMessage(clientFD, string(RS_SIGN_UP_S) + " " + acc.Serialize());
+            WriteLog(LogType::Success, clientFD, "SIGN UP", acc.Capture());
 
             stringstream ss;
             ss << accountID << " " << account.Email << " " << account.Password << " " << accountName;
@@ -61,8 +72,8 @@ void HandleLogIn(int clientFD, string data)
 
             if (Accounts.find(id) != Accounts.end())
             {
-                cout << "AAAAA" << endl;
                 SendMessage(clientFD, RS_LOG_IN_F_ACCOUNT_HAS_BEEN_USED);
+                WriteLog(LogType::Failure, clientFD, "LOG IN : Account has been used");
             }
             else if (account.Password == password)
             {
@@ -70,20 +81,22 @@ void HandleLogIn(int clientFD, string data)
                 {
                     .ID = id,
                     .Name = name,
-                    .FD = clientFD
                 };
                 Accounts[acc.ID] = acc;
-
+                Clients[clientFD] = acc.ID;
                 SendMessage(clientFD, string(RS_LOG_IN_S) + " " + acc.Serialize());
+                WriteLog(LogType::Success, clientFD, "LOG IN", acc.Capture());
             }
             else
             {
                 SendMessage(clientFD, RS_LOG_IN_F_WRONG_PASSWORD);
+                WriteLog(LogType::Failure, clientFD, "LOG IN : Wrong password");
             }
         }
         else
         {
             SendMessage(clientFD, RS_LOG_IN_F_ACCOUNT_NOT_EXISTED);
+            WriteLog(LogType::Failure, clientFD, "LOG IN : Account not existed");
         }
     }
     else

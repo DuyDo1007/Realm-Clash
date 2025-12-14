@@ -1,14 +1,27 @@
 #ifndef SERVER_MODEL_ENTITY_ACCOUNT
 #define SERVER_MODEL_ENTITY_ACCOUNT
 
+struct SessionEntity
+{
+    atomic<bool> Counting = { false };
+    chrono::steady_clock::time_point StartTime;
+
+    void Initialize()
+    {
+        Counting.store(false);
+		StartTime = chrono::steady_clock::now();
+    }
+};
+
 struct AccountEntity
 {
     int ID;
     string Name;
 
-    int FD;
-    int RoomID;
-    bool IsHost;
+    int Team = -1;
+    int PendingTeam;
+    bool IsTeamLeader;
+    bool IsRoomLeader;
 
     string Serialize() const
     {
@@ -17,6 +30,10 @@ struct AccountEntity
         j["Name"] = Name;
 
         return j.dump();
+    }
+    string Capture() const
+    {
+		return "ID: " + to_string(ID) + ", Name: " + Name;
     }
 };
 
