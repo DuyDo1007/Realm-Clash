@@ -129,6 +129,11 @@ void UpdateResourcesQuantity(unordered_map<Resources,int>& own, unordered_map<Re
     }
 }
 
+void AddResourcesQuantity(unordered_map<Resources,int>& own, Resources resourceType, int amount){
+    auto it = own.find(resourceType);
+    it->second += amount;
+}
+
 int BuyDefense(Castle* castle, Team* team, Items item_type){
     if(castle->ownerTeamID != team->ID) return 0; /*Chỉ có team chiếm đóng mới được trang bị phòng thủ*/
 
@@ -147,7 +152,6 @@ int BuyDefense(Castle* castle, Team* team, Items item_type){
         return SHOP_EQUIPMENT_S;
     }
 }
-
 int BuyWeapon(Team* team, Items item_type){
     Item* item = GetItem(item_type);
     int cmp_res = ResourceCompare(team->ResourceQuantity,item->Cost);
@@ -174,7 +178,6 @@ int FindWeapon(Team* team, Items weapon){
 void RemoveWeapon(vector<int>& Inventory, int index){
     Inventory.erase(Inventory.begin() + index);
 }
-
 int AttackCastle(Castle* castle, Team* team, Items weapon){
     
     if(castle->ownerTeamID == team->ID) return -1; /*Tự tấn công bản thân*/
@@ -201,4 +204,29 @@ int AttackCastle(Castle* castle, Team* team, Items weapon){
         return 0; /* Bổ sung mã trả về : Trường hợp không tồn tại vũ khí trong kho đồ*/
     }
 }
+int MineResourceFromSpot(Spot* spot, Team* team, Resources resourceType)
+{
+    // Chỉ team chiếm spot mới được khai thác
+    if (spot->ownerTeamID != team->ID)
+        return 0;
+
+    auto mineIt = RESOURCE_MINE_AMOUNT.find(resourceType);
+    if (mineIt == RESOURCE_MINE_AMOUNT.end())
+        return 0;
+
+    int amount = mineIt->second;
+
+    auto it = team->ResourceQuantity.find(resourceType);
+    if (it == team->ResourceQuantity.end())
+    {
+        team->ResourceQuantity[resourceType] = amount;
+    }
+    else
+    {
+        it->second += amount;
+    }
+
+    return RS_GIVE_RESOURCE_S;
+}
+
 #endif
