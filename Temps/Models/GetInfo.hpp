@@ -35,35 +35,4 @@ void GetTeamResourceInfo(int teamId)
     }
 }
 
-int GetTeamResult(int teamId)
-{
-    auto it = Teams.find(teamId);
-    Team tmp = it->second;
-    if (it == Teams.end()){
-        cout << "Invalid team !" << endl;
-        return -1;
-    }
-    auto wood = tmp.ResourceQuantity.find(Resources::Gold)->second;
-    auto stone = tmp.ResourceQuantity.find(Resources::Stone)->second;
-    auto iron = tmp.ResourceQuantity.find(Resources::Iron)->second;
-    auto gold = tmp.ResourceQuantity.find(Resources::Gold)->second;
-    int total = gold*10 + wood + stone*2 + iron*3;
-    return total;
-}
-int GameResult()
-{
-    int maxPoint = -1;
-    int winnerTeamId = -1;
-    for (const auto& teamPair : Teams)
-    {
-        int teamId = teamPair.first;
-        int teamPoint = GetTeamResult(teamId);
-        if (teamPoint > maxPoint)
-        {
-            maxPoint = teamPoint;
-            winnerTeamId = teamId;
-        }
-    }
-    return winnerTeamId;
-}
 #endif

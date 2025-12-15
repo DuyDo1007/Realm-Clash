@@ -4,6 +4,26 @@
 #include "Participant.hpp"
 #include "../../Cores/CoreDefinition.hpp"
 using namespace std;
+struct Spot
+{
+    int spotID;
+    int ownerTeamID; 
+};
+
+struct Castle
+{
+    int castleID; 
+    int ownerTeamID = -1; 
+    int defensePoints;
+    std::vector<int> equippedItems;
+};
+
+struct Building
+{
+    std::unordered_map<int, Castle> Castles;
+    std::unordered_map<int, Spot> Spots;
+};
+
 enum Items{
     BALLISTA, 
     CATAPULT,
@@ -109,6 +129,10 @@ void UpdateResourcesQuantity(unordered_map<Resources,int>& own, unordered_map<Re
     }
 }
 
+void AddResourcesQuantity(unordered_map<Resources,int>& own, Resources resourceType, int amount){
+    auto it = own.find(resourceType);
+    it->second += amount;
+}
 int BuyDefense(Castle* castle, Team* team, Items item_type){
     if(castle->ownerTeamID != team->ID) return 0; /*Chỉ có team chiếm đóng mới được trang bị phòng thủ*/
 
@@ -153,8 +177,35 @@ int FindWeapon(Team* team, Items weapon){
 void RemoveWeapon(vector<int>& Inventory, int index){
     Inventory.erase(Inventory.begin() + index);
 }
+int AttackCastle(Castle* castle, Team* team, Items weapon){
+    
+    if(castle->ownerTeamID == team->ID) return RS_ATTACK_CASTLE_F_SELF_ATTACK; /*Tự tấn công bản thân*/
+
+    int find_result_index = FindWeapon(team,weapon);
+    if(find_result_index >= 0){
+        Item* attack_item = GetItem(weapon);
+        if(castle->defensePoints > attack_item->AttackPoint){
+            delete attack_item;
+            return RS_ATTACK_CASTLE_F_INSUFFICIENT_POWER;
+        }
+        else if(castle->defensePoints <= attack_item->AttackPoint){
+            castle->defensePoints = 0;
+            castle->equippedItems;
+            RemoveWeapon(team->Inventory,find_result_index);
+            castle->ownerTeamID = team->ID;
+            /* Change questions ...*/
+
+            delete attack_item;
+            return RS_ATTACK_CASTLE_S;
+        }
+    }
+    else{
+        return RS_ATTACK_CASTLE_F_WEAPON_NOT_FOUND;
+    }
+}
 int MineResourceFromSpot(Spot* spot, Team* team, Resources resourceType)
 {
+    // Chỉ team chiếm spot mới được khai thác
     if (spot->ownerTeamID != team->ID)
         return RS_REQUEST_QUESTION_F_SLOT_OCCUPIED;
 
@@ -176,5 +227,4 @@ int MineResourceFromSpot(Spot* spot, Team* team, Resources resourceType)
 
     return RS_GIVE_RESOURCE_S;
 }
-void 
 #endif
