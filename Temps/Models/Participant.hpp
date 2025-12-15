@@ -26,6 +26,26 @@ struct Team
     std::vector<int> Inventory; /*Store Items*/
     std::unordered_map<Resources,int> ResourceQuantity;
 };
+struct Spot
+{
+    int spotID;
+    int ownerTeamID; 
+};
+
+struct Castle
+{
+    int castleID; 
+    int ownerTeamID = -1; 
+    int defensePoints;
+    std::vector<int> equippedItems;
+};
+
+struct Building
+{
+    std::unordered_map<int, Castle> Castles;
+    std::unordered_map<int, Spot> Spots;
+};
+
 std::unordered_map<Resources, int> RESOURCE_MINE_AMOUNT = {
     { Resources::Wood,  30 },
     { Resources::Stone, 15 },
