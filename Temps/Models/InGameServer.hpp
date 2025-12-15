@@ -3,26 +3,22 @@
 #include <vector>
 #include "Participant.hpp"
 #include "../../Cores/CoreDefinition.hpp"
+#include <unordered_map>
 using namespace std;
-struct Spot
+Building CreateMap()
 {
-    int spotID;
-    int ownerTeamID; 
-};
-
-struct Castle
-{
-    int castleID; 
-    int ownerTeamID = -1; 
-    int defensePoints;
-    std::vector<int> equippedItems;
-};
-
-struct Building
-{
-    std::unordered_map<int, Castle> Castles;
-    std::unordered_map<int, Spot> Spots;
-};
+    auto building = Building();
+    building.Castles[1] = Castle{1, -1, 0, {}};
+    building.Castles[2] = Castle{2, -1, 0, {}};
+    building.Castles[3] = Castle{3, -1, 0, {}};
+    building.Spots[1] = Spot{1, -1};
+    building.Spots[2] = Spot{2, -1};
+    building.Spots[3] = Spot{3, -1};
+    building.Spots[4] = Spot{4, -1};
+    building.Spots[5] = Spot{5, -1};
+    building.Spots[6] = Spot{6, -1};
+    return building;
+}
 
 enum Items{
     BALLISTA, 
@@ -41,6 +37,26 @@ struct Item
     int AttackPoint = 0;
     int DefensePoint = 0;
 };
+void SendMsg(Team* team, const string &msg)
+{
+    for (int memberFD : team->Members)
+    {
+        SendMessage(memberFD, msg);
+    }
+}
+Building CreateMap()
+{
+    auto building = Building();
+    building.Castles[1] = Castle{1, -1, 0, {}};
+    building.Castles[2] = Castle{2, -1, 0, {}};
+    building.Castles[3] = Castle{3, -1, 0, {}};
+    for(int i = 0; i < 3; i++){
+        for (int j = 0;j < 6;j++){
+            building.Spots[j] = Spot{j, -1, static_cast<Resources>(i)};
+        }
+    }
+    return building;
+}
 
 Item* GetItem(Items ItemType)
 {
@@ -114,7 +130,7 @@ int ResourceCompare(unordered_map<Resources,int> own, unordered_map<Resources,in
         int requiredAmount = req.second;
         auto it = own.find(type);
         if (it == own.end() || it->second < requiredAmount)
-            return RS_SHOP_EQUIPMENT_F_LACK_RESOURCE;
+            SendMsg(team, string(RS_SHOP_EQUIPMENT_F_LACK_RESOURCE));
     }
     return true; 
 }
@@ -141,14 +157,14 @@ int BuyDefense(Castle* castle, Team* team, Items item_type){
     int cmp_res = ResourceCompare(team->ResourceQuantity,item->Cost);
     if(cmp_res == 0){
         delete item;
-        return SHOP_EQUIPMENT_F_LACK_RESOURCE;
+        SendMsg(team, string(RS_SHOP_EQUIPMENT_F_LACK_RESOURCE));
     }
     else{
         castle->equippedItems.push_back(item_type);
         castle->defensePoints += item->DefensePoint;
         UpdateResourcesQuantity(team->ResourceQuantity,item->Cost);
         delete item;
-        return SHOP_EQUIPMENT_S;
+        SendMsg(team, string(RS_SHOP_EQUIPMENT_S));
     }
 }
 int BuyWeapon(Team* team, Items item_type){
@@ -156,13 +172,13 @@ int BuyWeapon(Team* team, Items item_type){
     int cmp_res = ResourceCompare(team->ResourceQuantity,item->Cost);
     if(cmp_res == 0){
         delete item;
-        return SHOP_EQUIPMENT_F_LACK_RESOURCE;
+        SendMsg(team,string(RS_SHOP_EQUIPMENT_F_LACK_RESOURCE));
     }
     else{
         team->Inventory.push_back(item_type);
         UpdateResourcesQuantity(team->ResourceQuantity,item->Cost);
         delete item;
-        return SHOP_EQUIPMENT_S;
+        SendMsg(team,string(RS_SHOP_EQUIPMENT_S));
     }
 }
 
@@ -186,7 +202,7 @@ int AttackCastle(Castle* castle, Team* team, Items weapon){
         Item* attack_item = GetItem(weapon);
         if(castle->defensePoints > attack_item->AttackPoint){
             delete attack_item;
-            return RS_ATTACK_CASTLE_F_INSUFFICIENT_POWER;
+            SendMsg(team,string(RS_ATTACK_CASTLE_F_NOT_ENOUGH_ATTACK_POWER));
         }
         else if(castle->defensePoints <= attack_item->AttackPoint){
             castle->defensePoints = 0;
@@ -196,35 +212,33 @@ int AttackCastle(Castle* castle, Team* team, Items weapon){
             /* Change questions ...*/
 
             delete attack_item;
-            return RS_ATTACK_CASTLE_S;
+            SendMsg(team,string(RS_ATTACK_CASTLE_S));
         }
     }
     else{
-        return RS_ATTACK_CASTLE_F_WEAPON_NOT_FOUND;
+        SendMsg(team,string(RS_ATTACK_CASTLE_F_NO_WEAPON));
     }
 }
-int MineResourceFromSpot(Spot* spot, Team* team, Resources resourceType)
+void MineResourceFromSpot(Spot* spot, Team* team, Resources resourceType)
 {
-    // Chỉ team chiếm spot mới được khai thác
     if (spot->ownerTeamID != team->ID)
-        return RS_REQUEST_QUESTION_F_SLOT_OCCUPIED;
-
+       SendMsg(team,string(RS_REQUEST_QUESTION_F_SLOT_OCCUPIED));
     auto mineIt = RESOURCE_MINE_AMOUNT.find(resourceType);
     if (mineIt == RESOURCE_MINE_AMOUNT.end())
-        return RS_GIVE_RESOURCE_F;
+        SendMsg(team,string(RS_GIVE_RESOURCE_F)) ;
 
     int amount = mineIt->second;
 
     auto it = team->ResourceQuantity.find(resourceType);
     if (it == team->ResourceQuantity.end())
     {
-        return RS_GIVE_RESOURCE_F;
+        SendMsg(team,string(RS_GIVE_RESOURCE_F));
     }
     else
     {
         it->second += amount;
     }
 
-    return RS_GIVE_RESOURCE_S;
+    SendMsg(team, string(RS_GIVE_RESOURCE_S));
 }
 #endif

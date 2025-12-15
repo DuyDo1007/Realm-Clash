@@ -29,6 +29,20 @@ struct Team
 struct Spot
 {
     int spotID;
+    int ownerTeamID;
+    Resources resourceType; 
+};
+
+struct Castle
+{
+    int castleID; 
+    int ownerTeamID = -1; 
+    int defensePoints;
+    std::vector<int> equippedItems;
+};
+struct Spot
+{
+    int spotID;
     int ownerTeamID; 
 };
 
@@ -40,6 +54,23 @@ struct Castle
     std::vector<int> equippedItems;
 };
 
+enum Items{
+    BALLISTA, 
+    CATAPULT,
+    CANNON,
+    FENCE,
+    WOOD_WALL,
+    STONE_WALL,
+    LEGEND_WALL,
+};
+
+struct Item
+{
+    Items ItemType;
+    std::unordered_map<Resources,int> Cost;
+    int AttackPoint = 0;
+    int DefensePoint = 0;
+};
 struct Building
 {
     std::unordered_map<int, Castle> Castles;
@@ -49,7 +80,8 @@ struct Building
 std::unordered_map<Resources, int> RESOURCE_MINE_AMOUNT = {
     { Resources::Wood,  30 },
     { Resources::Stone, 15 },
-    { Resources::Iron,   5 }
+    { Resources::Iron,   5 },
+    { Resources::Gold,   5 }
 };
 std::unordered_map<int,Team> Teams;
 

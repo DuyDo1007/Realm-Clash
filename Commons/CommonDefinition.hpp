@@ -45,7 +45,7 @@
 #define RS_JOIN_TEAM_F_REQUEST_EXPIRED          "202"
 #define RS_JOIN_TEAM_F_REQUEST_FULL				"206"
 #define RS_EXIT_TEAM_S                          "212"
-#define RS_EXIT_TEAN_F_MATCH_STARTED            "203"
+#define RS_EXIT_TEAM_F_MATCH_STARTED            "203"
 #define RS_ADD_MEMBER_S                         "213"
 #define RS_ADD_MEMBER_F_NOT_FOUND               "204"
 #define RS_ADD_MEMBER_F_TEAM_FULL               "205"
@@ -74,7 +74,7 @@
 #define RS_UPDATE_JOIN_REQUEST					"812"
 #define RS_UPDATE_PENDING_JOIN					"813"
 #define RS_UPDATE_PENDING_JOIN_ACCEPTED			"814"
-
+#define RS_UPDATE_GAME_STARTED                  "815"
 #define RS_NETWORK_CONNECTED                    "910"
 
 // Client console messages
