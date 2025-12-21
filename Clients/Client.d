@@ -13,11 +13,13 @@ Clients/Client.o: Clients/Client.cpp \
  Clients/Models/Records/AccountRecord.hpp \
  Clients/Models/Records/LobbyRecord.hpp \
  Clients/Models/Records/MapRecord.hpp \
+ Clients/Models/Records/ResourceRecord.hpp \
  Clients/Models/Entities/AccountEntity.hpp \
- Clients/Models/Entities/OccupationEntity.hpp Clients/ClientUtilities.hpp \
+ Clients/Models/Entities/OccupationEntity.hpp \
+ Clients/Models/Entities/CartEntity.hpp Clients/ClientUtilities.hpp \
  Clients/Views/LobbyView.hpp Clients/Views/WelcomeView.hpp \
- Clients/Views/GameView.hpp Clients/Views/QuestionView.hpp \
- Clients/Handlers/Phases/PhaseWelcome.hpp \
+ Clients/Views/GameView.hpp Clients/Views/ShopView.hpp \
+ Clients/Views/QuestionView.hpp Clients/Handlers/Phases/PhaseWelcome.hpp \
  Clients/Handlers/Phases/PhaseLobby.hpp \
  Clients/Handlers/Phases/PhaseGame.hpp
 Clients/../Commons/Networks/MessageHandler.hpp:
@@ -36,12 +38,15 @@ Clients/ClientIncluding.hpp:
 Clients/Models/Records/AccountRecord.hpp:
 Clients/Models/Records/LobbyRecord.hpp:
 Clients/Models/Records/MapRecord.hpp:
+Clients/Models/Records/ResourceRecord.hpp:
 Clients/Models/Entities/AccountEntity.hpp:
 Clients/Models/Entities/OccupationEntity.hpp:
+Clients/Models/Entities/CartEntity.hpp:
 Clients/ClientUtilities.hpp:
 Clients/Views/LobbyView.hpp:
 Clients/Views/WelcomeView.hpp:
 Clients/Views/GameView.hpp:
+Clients/Views/ShopView.hpp:
 Clients/Views/QuestionView.hpp:
 Clients/Handlers/Phases/PhaseWelcome.hpp:
 Clients/Handlers/Phases/PhaseLobby.hpp:

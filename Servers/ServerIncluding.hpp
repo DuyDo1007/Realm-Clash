@@ -1,6 +1,8 @@
 #ifndef SERVER_INCLUDING
 #define SERVER_INCLUDING
 
+constexpr array<int, 4> ResourcePerTick = { 30, 15, 5, 5 };
+
 mutex ClientsMutex;
 mutex SessionsMutex;
 ofstream LogFile;
@@ -11,6 +13,8 @@ int RoomLeader = 0;
 
 atomic<bool> ServerTicking { false };
 thread ServerTickThread;
+
+int GamePhase;
 
 int GetValueByKey(unordered_map<int,int>& m, int v)
 {
@@ -37,7 +41,7 @@ LobbyEntity Lobby;
 
 #include "Models/Entities/GameEntity.hpp"
 
-vector<GameTeamEntity> Teams;
+GroupEntity Group;
 MapEntity Map;
 
 #include "ServerNetwork.hpp"

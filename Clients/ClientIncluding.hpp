@@ -6,9 +6,11 @@
 #include "Models/Records/AccountRecord.hpp"
 #include "Models/Records/LobbyRecord.hpp"
 #include "Models/Records/MapRecord.hpp"
+#include "Models/Records/ResourceRecord.hpp"
 
 #include "Models/Entities/AccountEntity.hpp"
 #include "Models/Entities/OccupationEntity.hpp"
+#include "Models/Entities/CartEntity.hpp"
 
 int CurrentPhase = 0;
 AccountRecord Account;
@@ -21,12 +23,14 @@ string Log = FG_GREEN "";
 int Team;
 int Tick;
 MapRecord Map;
+ResourceRecord Resource;
 
 #include "ClientUtilities.hpp"
 
 #include "Views/LobbyView.hpp"
 #include "Views/WelcomeView.hpp"
 #include "Views/GameView.hpp"
+#include "Views/ShopView.hpp"
 #include "Views/QuestionView.hpp"
 
 #include "Handlers/Phases/PhaseWelcome.hpp"

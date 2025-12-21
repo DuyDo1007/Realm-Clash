@@ -3,12 +3,82 @@
 
 enum class ResourceType { Wood, Stone, Iron, Gold };
 
-struct GameTeamEntity
+struct TeamEntity
 {
 	vector<int> Members;
-	pair<int, int> WoodSlot = { -1, -1 };
-	pair<int, int> RockSlot = { -1, -1 };
-	pair<int, int> IronSlot = { -1, -1 };
+    array<array<int, 2>, 3> SpotSlots = { { {-1, -1}, {-1, -1}, {-1, -1} } };
+    vector<int> CastleSlots;
+
+    array<int, 4> Resources;
+    array<int, 3> Weapons;
+
+    int GetFreeSlot(int type)
+    {
+        auto& spot = SpotSlots[type];
+
+        if (spot[0] == -1) return 0;
+        else if (spot[1] == -1) return 1;
+
+        return -1;
+    }
+};
+
+struct GroupEntity
+{
+    vector<TeamEntity> Teams;
+
+    void CreateTeam()
+    {
+        for (auto& team : Lobby.Teams)
+        {
+            if (team.CountMember() == 0) continue;
+
+            int teamIndex = (int)Teams.size();
+            Teams.emplace_back();
+            auto& gameTeam = Teams.back();
+
+            for (auto& member : team.Members)
+            {
+                if (member.ID == 0) continue;
+
+                Accounts[member.ID].GameTeam = teamIndex;
+                gameTeam.Members.push_back(member.ID);
+
+            }
+        }
+    }
+    void UpdateResource()
+    {
+        for (auto& team : Teams)
+        {
+            for (int type = 0; type < 3; type++)
+            {
+                for (int slot = 0; slot < 2; slot++)
+                {
+                    if (team.SpotSlots[type][slot] == -1) continue;
+
+                    team.Resources[type] += ResourcePerTick[type] * MULTIPLIER_RESOURSE_UPDATE;
+                }
+            }
+
+            for (int castle = 0; castle < (int)team.CastleSlots.size(); castle++)
+            {
+                team.Resources[3] += ResourcePerTick[3] * MULTIPLIER_RESOURSE_UPDATE;
+            }
+        }
+    }
+
+    string SerializeResource() const
+    {
+        json j = json::array();
+
+        for (const auto& team : Teams)
+        {
+            j.push_back(team.Resources);
+        }
+
+        return j.dump();
+    }
 };
 
 struct SpotEntity
