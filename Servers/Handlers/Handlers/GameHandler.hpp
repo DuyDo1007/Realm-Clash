@@ -1,6 +1,7 @@
 #ifndef SERVER_HANDLER_GAME
 #define SERVER_HANDLER_GAME
 
+#include "../../Temps/Models/InGameServer.hpp"
 void RequestStopServerTick()
 {
 	ServerTicking.store(false);
@@ -132,18 +133,46 @@ void HandleOccupyCastle(int clientFD, const string& data)
     BroadcastToClient(clientFD, string(RS_UPDATE_GAME_MAP) + " " + Map.Serialize(), true);
 }
 
-void HandleBuyWeapon(int client, const CartRecord& cart)
+void HandleBuyWeapon(int clientFD, const CartRecord& cart)
 {
-    auto account = Accounts[Clients[client]];
+    auto account = Accounts[Clients[clientFD]];
     auto& team = Group.Teams[account.GameTeam];
 
-    Item* item_type = GetItemByEquipment(cart.Equipment);
+    Item item_type = GetItem(cart.Equipment);
+    if (cart.Type == 1) return;
+    if (ResourceCompare(team.ResourceQuantity, item_type.Cost) == 0)
+    {
+        writeLog(LogType::Failure, clientFD, "BUY WEAPON : Lack of resources", item_type.Capture());
+        SendMsg(team,string(RS_SHOP_EQUIPMENT_F_LACK_RESOURCE));
+        return;
+    }
+    for(auto i : cart.Amount){
+        team.Inventory.push_back(item_type.id);
+    };
+    UpdateResourcesQuantity(team.ResourceQuantity, item_type.Cost);
+    writeLog(LogType::Success, clientFD, "BUY WEAPON", item_type.Capture());
+    SendMsg(team,string(RS_SHOP_EQUIPMENT_S));
 }
 
-
-void HandleBuyDefense(int client, const CartRecord& cart)
+void HandleBuyDefense(int clientFD,const CartRecord& cart)
 {
+    auto account = Accounts[Clients[clientFD]];
+    auto& team = Group.Teams[account.GameTeam];
 
+    if (cart.Type == 0) return;
+    Item item_type = GetItem(cart.Equipment);
+    if (ResourceCompare(team.ResourceQuantity, item_type.Cost) == 0)
+    {
+        writeLog(LogType::Failure, clientFD, "BUY DEFENSE : Lack of resources", item_type.Capture());
+        SendMsg(team,string(RS_SHOP_EQUIPMENT_F_LACK_RESOURCE));
+        return;
+    }
+    for(auto i : cart.Amount){
+        team.Inventory.push_back(item_type.id);
+    };
+    UpdateResourcesQuantity(team.ResourceQuantity, item_type.Cost);
+    writeLog(LogType::Success, clientFD, "BUY DEFENSE", item_type.Capture());
+    SendMsg(team,string(RS_SHOP_EQUIPMENT_S));
 }
 
 #endif
