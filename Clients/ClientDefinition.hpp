@@ -20,6 +20,7 @@
 #define CODE_NULL								"NULL"
 
 // Client phases
+
 #define PHASE_WELCOME							000
 
 #define PHASE_LOBBY_JOINING_READY				100

@@ -62,6 +62,26 @@
 #define RS_START_GAME_S							"300"
 #define RS_START_GAME_F_NOT_ENOUGH_TEAMS		"301"
 
+#define RS_REQUEST_QUESTION_S                   "310"
+#define RS_REQUEST_QUESTION_F_SLOT_OCCUPIED     "301"
+#define RS_REQUEST_QUESTION_F_SLOT_LIMIT        "302"
+
+#define RS_ANSWER_QUESTION_S                    "410"
+#define RS_ANSWER_QUESTION_F_WRONG_ANSWER       "401"
+#define RS_ANSWER_QUESTION_F_TIME_OUT           "402"
+#define RS_ANSWER_QUESTION_F_TIME_PENALTY       "403"
+
+#define RS_GIVE_RESOURCE_S                      "510"
+#define RS_GIVE_RESOURCE_F                      "501"
+
+#define RS_SHOP_EQUIPMENT_S                     "610"
+#define RS_SHOP_EQUIPMENT_F_LACK_RESOURCE       "601"
+
+#define RS_ATTACK_CASTLE_S                      "710"
+#define RS_ATTACK_CASTLE_F_INSUFFICIENT_POWER   "701"
+#define RS_ATTACK_CASTLE_F_SELF_ATTACK          "702"
+#define RS_ATTACK_CASTLE_F_INVALID_ITEM         "703"
+
 #define RS_OCCUPY_SPOT_S						"400"
 #define RS_OCCUPY_SPOT_F_FULL_OF_SLOT			"401"
 #define RS_OCCUPY_SPOT_F_SPOT_OCCUPIED			"401"
